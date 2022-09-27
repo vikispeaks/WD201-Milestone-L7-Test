@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
+const Sequelize = require("sequelize");
 const { Todo } = require("./models");
 const bodyParser = require("body-parser");
+const Op = Sequelize.Op;
 const todo = require("./models/todo");
 
 app.use(bodyParser.json());
@@ -10,7 +12,37 @@ app.get("/todos", async function (request, response) {
   console.log("Processing list of all Todos ...");
   try {
     const todos = await Todo.findAll();
-    return response.json(todos);
+    console.log(todos);
+    const d = new Date().toLocaleDateString("en-CA");
+    const overdue = await Todo.findAll({
+      where: { dueDate: { [Op.lt]: d } },
+      order: [["id", "ASC"]],
+    });
+    const overdueComplete = await Todo.findAll({
+      where: { dueDate: { [Op.lt]: d }, completed: true },
+    });
+    const later = await Todo.findAll({
+      where: { dueDate: { [Op.gt]: d } },
+    });
+    const laterComplete = await Todo.findAll({
+      where: { dueDate: { [Op.gt]: d }, completed: true },
+    });
+    const today = await Todo.findAll({
+      where: { dueDate: { [Op.eq]: d } },
+    });
+    const todayComplete = await Todo.findAll({
+      where: { dueDate: { [Op.eq]: d }, completed: true },
+    });
+
+    app.locals.tasks = todos;
+    app.locals.overdue = overdue;
+    app.locals.overdueComplete = overdueComplete;
+    app.locals.later = later;
+    app.locals.laterComplete = laterComplete;
+    app.locals.today = today;
+    app.locals.todayComplete = todayComplete;
+
+    response.render("index");
   } catch (error) {
     console.log(error);
     return response.status(422).json(error);
@@ -64,6 +96,7 @@ app.delete("/todos/:id", async function (request, response) {
 });
 
 app.get("/", (request, response) => {
+  app.locals.tasks = [{ title: "taks 1" }, { title: "task 2" }];
   response.render("index");
 });
 

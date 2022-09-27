@@ -3,10 +3,28 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index page</title>
+    <title>Home Todo</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <%- include('header.ejs') %>
+    <%- include('header.ejs') %> 
+
+    <!-- Over due -->
+    <p><b style="font-size: 25px;">Overdue</b> <%= overdueComplete.length %> / <%= overdue.length %></p>
+    <% for (var i=0; i<overdue.length; i++) { %>
+    <p style="display: flex;"><input type="checkbox" checked> <p style="font-size: 15px;"><%= overdue[i].title%></p> <%= overdue[i].dueDate%></p>
+    <% } %>
+
+    <!-- Due Today -->
+    <p><b style="font-size: 25px;">Due Today</b> <%=todayComplete.length%> / <%=today.length%></p>
+    <% for (var i=0; i<today.length; i++) { %>
+    <p style="display: flex;"><input type="checkbox" value=<%today[i].completed%>> <p style="font-size: 15px;"><%= today[i].title%></p><p>
+    <% } %>
+
+    <!-- Due Later -->
+    <p><b style="font-size: 25px;">Due Later</b> <%=laterComplete.length%> / <%=later.length%></p>
+    <% for (var i=0; i<later.length; i++) { %>
+    <p style="display: flex;"><input type="checkbox" value=<%later[i].completed%>> <p style="font-size: 15px;"><%= later[i].title%></p> <%= later[i].dueDate%></p>
+    <% } %>
   </body>
 </html>
